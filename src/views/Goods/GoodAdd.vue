@@ -23,22 +23,22 @@
         <el-tabs tab-position="left" :before-leave="tabLeave">
           <el-tab-pane label="基本属性">
             <el-form :model="goodForm" :rules="goodRules" ref="goodRef" class="demo-ruleForm">
-              <el-form-item label="商品名称" prop="name">
-                <el-input v-model="goodForm.name"></el-input>
+              <el-form-item label="商品名称" prop="goods_name">
+                <el-input v-model="goodForm.goods_name"></el-input>
               </el-form-item>
-              <el-form-item label="商品价格" prop="price">
-                <el-input v-model="goodForm.price"></el-input>
+              <el-form-item label="商品价格" prop="goods_price">
+                <el-input v-model="goodForm.goods_price"></el-input>
               </el-form-item>
-              <el-form-item label="商品重量" prop="weight">
-                <el-input v-model="goodForm.weight"></el-input>
+              <el-form-item label="商品重量" prop="goods_weight">
+                <el-input v-model="goodForm.goods_weight"></el-input>
               </el-form-item>
-              <el-form-item label="商品数量" prop="number">
-                <el-input v-model="goodForm.number"></el-input>
+              <el-form-item label="商品数量" prop="goods_number">
+                <el-input v-model="goodForm.goods_number"></el-input>
               </el-form-item>
-              <el-form-item label="商品分类" prop="category">
+              <el-form-item label="商品分类" prop="goods_cat">
                 <br>
                 <el-cascader
-                  v-model="goodForm.category"
+                  v-model="goodForm.goods_cat"
                   :options="categorieList"
                   :props="{ expandTrigger: 'hover', value: 'cat_id', label: 'cat_name' }">
                 </el-cascader>
@@ -46,7 +46,7 @@
             </el-form>
           </el-tab-pane>
           <el-tab-pane label="商品参数">
-            <span v-for="(item, index) in goodParams" :key="index">{{item.attr_name}}</span>
+            <span v-for="item in goodParams" :key="item.attr_id">{{item.attr_name}}</span>
           </el-tab-pane>
           <el-tab-pane label="商品属性">
             <el-form :model="goodAttrForm"  ref="goodAttrRef" class="demo-ruleForm">
@@ -60,12 +60,18 @@
               class="upload-demo"
               :action="actionUrl"
               :headers="headers"
+              :http-request="uploadFile"
               multiple>
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="商品内容">商品内容</el-tab-pane>
+          <el-tab-pane label="商品内容">
+            <div class="editor-body">
+              <quill-editor ref="text" v-model="goodForm.goods_introduce" class="editor" :options="editorOption"/>
+            </div>
+            <el-button type="primary" @click="submitGood">提交</el-button>
+          </el-tab-pane>
         </el-tabs>
       </div>
 
@@ -89,26 +95,29 @@ export default {
       ],
       categorieList: [],
       goodForm: {
-        name: '',
-        price: '',
-        weight: '',
-        number: '',
-        category: ''
+        goods_name: '',
+        goods_price: '',
+        goods_weight: '',
+        goods_number: '',
+        goods_cat: '',
+        goods_introduce: '',
+        pics: [],
+        attrs: []
       },
       goodRules: {
-        name: [
+        goods_name: [
           { required: true, message: '请输入商品名称', trigger: 'blur' }
         ],
-        price: [
+        goods_price: [
           { required: true, message: '请输入商品价格', trigger: 'blur' }
         ],
-        weight: [
+        goods_weight: [
           { required: true, message: '请输入商品重量', trigger: 'blur' }
         ],
-        number: [
+        goods_number: [
           { required: true, message: '请输入数量数量', trigger: 'blur' }
         ],
-        category: [
+        goods_cat: [
           { required: true, message: '请选择商品分类', trigger: 'blur' }
         ]
       },
@@ -118,7 +127,8 @@ export default {
       actionUrl: 'http://127.0.0.1:8888/api/private/v1/upload',
       headers: {
         Authorization: storage.get('token')
-      }
+      },
+      editorOption: {}
     }
   },
   mounted () {
@@ -152,14 +162,21 @@ export default {
       }
     },
     async getParams() {
-      const { data: res } = await this.$http.get(`/categories/${this.goodForm.category.slice(-1)}/attributes?sel=many`)
+      const { data: res } = await this.$http.get(`/categories/${this.goodForm.goods_cat.slice(-1)}/attributes?sel=many`)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.goodParams = res.data
     },
     async getAttr() {
-      const { data: res } = await this.$http.get(`/categories/${this.goodForm.category.slice(-1)}/attributes?sel=only`)
+      const { data: res } = await this.$http.get(`/categories/${this.goodForm.goods_cat.slice(-1)}/attributes?sel=only`)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.goodAttr = res.data
+    },
+    uploadFile(res) {
+      this.goodForm.pics.push(res.file)
+    },
+    submitGood() {
+      console.log(this.goodAttrForm)
+      console.log(this.goodForm)
     }
   }
 }
@@ -179,6 +196,12 @@ export default {
       .step-top{
         margin: 20px 100px;
         width: 1100px;
+      }
+      .editor-body{
+        height: 280px;
+        .editor{
+          height: 200px;
+        }
       }
 
     }
