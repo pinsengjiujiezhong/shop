@@ -4,11 +4,75 @@ import {
   Form,
   FormItem,
   Input,
-  Message
+  Message,
+  Header,
+  Main,
+  Footer,
+  Container,
+  Menu,
+  Aside,
+  Submenu,
+  menuItem,
+  Breadcrumb,
+  BreadcrumbItem,
+  Table,
+  TableColumn,
+  Pagination,
+  Switch,
+  Dialog,
+  MessageBox,
+  Row,
+  Col,
+  Tag,
+  Popconfirm,
+  Select,
+  Option,
+  Tree,
+  Cascader,
+  Timeline,
+  TimelineItem,
+  Alert,
+  Steps,
+  Step,
+  Tabs,
+  TabPane,
+  Upload
 } from 'element-ui'
 
 Vue.use(Button)
 Vue.use(Form)
 Vue.use(FormItem)
 Vue.use(Input)
+Vue.use(Container)
+Vue.use(Header)
+Vue.use(Main)
+Vue.use(Footer)
+Vue.use(Aside)
+Vue.use(Menu)
+Vue.use(Submenu)
+Vue.use(menuItem)
+Vue.use(Breadcrumb)
+Vue.use(BreadcrumbItem)
+Vue.use(Table)
+Vue.use(TableColumn)
+Vue.use(Pagination)
+Vue.use(Switch)
+Vue.use(Dialog)
+Vue.use(Row)
+Vue.use(Col)
+Vue.use(Tag)
+Vue.use(Popconfirm)
+Vue.use(Select)
+Vue.use(Option)
+Vue.use(Tree)
+Vue.use(Cascader)
+Vue.use(Timeline)
+Vue.use(TimelineItem)
+Vue.use(Alert)
+Vue.use(Steps)
+Vue.use(Step)
+Vue.use(Tabs)
+Vue.use(TabPane)
+Vue.use(Upload)
 Vue.prototype.$message = Message
+Vue.prototype.$confirm = MessageBox.confirm

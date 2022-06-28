@@ -2,7 +2,7 @@
     <div class="login-container">
       <div class="login-box">
         <div class="logo">
-          <img src="../../assets/logo.png" alt="">
+          <img src="../../assets/vue.png" alt="">
         </div>
         <div class="login-form">
           <el-form ref="loginFormRef" :model="loginForm" :rules="loginFormRules">

@@ -78,3 +78,14 @@ a:link:hover{
     clear: both;
     visibility: hidden;
 }
+
+#app {
+    min-width: 1366px;
+}
+
+.el-cascader-panel {
+    height: 204px;
+}
+.el-scrollbar__wrap {
+    overflow-x: hidden;
+}
