@@ -5,7 +5,7 @@
         <i :class="iconObj[menu.id]"></i>
         <span slot="title">{{ menu.authName }}</span>
       </template>
-      <el-menu-item :index="childItem.path" v-for="childItem in menu.children" :key="childItem.id">
+      <el-menu-item :index="'/' + childItem.path" v-for="childItem in menu.children" :key="childItem.id">
         <i class="el-icon-menu"></i>
         <span slot="title">{{childItem.authName}}</span>
       </el-menu-item>

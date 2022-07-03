@@ -3,14 +3,14 @@
     <div class="navigation">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item :to="{ path: '/welcome' }">首页</el-breadcrumb-item>
-        <el-breadcrumb-item>用户管理</el-breadcrumb-item>
-        <el-breadcrumb-item>用户列表</el-breadcrumb-item>
+        <el-breadcrumb-item>商品管理</el-breadcrumb-item>
+        <el-breadcrumb-item>商品列表</el-breadcrumb-item>
       </el-breadcrumb>
     </div>
     <div class="main">
       <div class="operation">
         <el-input placeholder="请输入用户名称" v-model="query" @keyup.enter.native="getGoodList">
-          <el-button slot="append" icon="el-icon-search" @click="getGoodList"></el-button>
+          <el-button slot="append" icon="el-icon-search" @click="searchGoodList"></el-button>
         </el-input>
         <el-button class="add-user" type="primary" @click="goodAdd">添加商品</el-button>
       </div>
@@ -46,11 +46,23 @@
           <template slot-scope="scope">
             <div class="operation-btn">
               <el-button type="primary" icon="el-icon-edit" size="mini" @click="editGoodVisible=true">{{scope.row.id}}</el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini" @click="delGood">{{scope.row.id}}</el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="delGood(scope.row.goods_id)"></el-button>
             </div>
           </template>
         </el-table-column>
       </el-table>
+      <div class="pagination">
+        <el-pagination
+          style="margin-top: 20px; display: flex;"
+          @size-change="goodSizeChange"
+          @current-change="goodPageChange"
+          :current-page="pagenum"
+          :page-sizes="[10, 20, 50, 100]"
+          :page-size="pagesize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total">
+        </el-pagination>
+      </div>
     </div>
   </div>
 </template>
@@ -83,11 +95,43 @@ export default {
       this.total = res.data.total
       this.goodList = res.data.goods
     },
+    searchGoodList() {
+      this.pagenum = 1
+      this.getGoodList()
+    },
     goodAdd() {
       this.$router.push('/goods/add')
     },
-    delGood() {
-      console.log('delGood')
+    delGood(_id) {
+      console.log('_id: ', _id)
+      this.$confirm('此操作将永久删除该商品, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        const { data: res } = await this.$http.delete(`/goods/${_id}`)
+        if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
+        console.log('进行到这里了')
+        this.$message({
+        type: 'success',
+        message: '删除成功!'
+        })
+        this.getGoodList()
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    goodSizeChange(event) {
+      this.pagenum = 1
+      this.pagesize = event
+      this.getGoodList()
+    },
+    goodPageChange(event) {
+      this.pagenum = event
+      this.getGoodList()
     }
   }
 }
@@ -115,6 +159,12 @@ export default {
         .add-user{
           margin-left: 20px;
         }
+      }
+      .pagination{
+        display: flex;
+        margin-top: 20px;
+        flex-direction: row;
+        justify-content: right;
       }
     }
   }

@@ -46,11 +46,19 @@
             </el-form>
           </el-tab-pane>
           <el-tab-pane label="商品参数">
-            <span v-for="item in goodParams" :key="item.attr_id">{{item.attr_name}}</span>
+            <div class="checkbox-group">
+              <el-form>
+                <el-form-item :label="manyTable.attr_name" v-for="(manyTable, index) in manyTableData" :key="index">
+                  <br><el-checkbox-group v-model="manyTable.label">
+                    <el-checkbox :label="item" v-for="(item, index) in manyTable.label" :key="index" border></el-checkbox>
+                  </el-checkbox-group>
+                </el-form-item>
+              </el-form>
+            </div>
           </el-tab-pane>
           <el-tab-pane label="商品属性">
-            <el-form :model="goodAttrForm"  ref="goodAttrRef" class="demo-ruleForm">
-              <el-form-item :label="item.attr_name" v-for="(item, index) in goodAttr" :key="index">
+            <el-form>
+              <el-form-item :label="item.attr_name" v-for="(item, index) in onlyTableData" :key="index">
                 <el-input v-model="item.attr_vals"></el-input>
               </el-form-item>
             </el-form>
@@ -121,14 +129,17 @@ export default {
           { required: true, message: '请选择商品分类', trigger: 'blur' }
         ]
       },
-      goodParams: [],
-      goodAttr: [],
       goodAttrForm: {},
       actionUrl: 'http://127.0.0.1:8888/api/private/v1/upload',
       headers: {
         Authorization: storage.get('token')
       },
-      editorOption: {}
+      editorOption: {},
+      goodManyParams: [],
+      goodOnlyParams: [],
+      checkList: '',
+      manyTableData: [],
+      onlyTableData: []
     }
   },
   mounted () {
@@ -157,6 +168,9 @@ export default {
       if (activeName - 0 === 1) {
         this.getParams()
       }
+      if (oldActiveName - 0 === 1) {
+        this.goodParamsSubmit()
+      }
       if (activeName - 0 === 2) {
         this.getAttr()
       }
@@ -164,19 +178,50 @@ export default {
     async getParams() {
       const { data: res } = await this.$http.get(`/categories/${this.goodForm.goods_cat.slice(-1)}/attributes?sel=many`)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-      this.goodParams = res.data
+      this.manyTableData = res.data.map(item => {
+        return {
+          ...item,
+          label: item.attr_vals.split(' ')
+        }
+      })
+      console.log('manyTableData: ', this.manyTableData)
     },
     async getAttr() {
       const { data: res } = await this.$http.get(`/categories/${this.goodForm.goods_cat.slice(-1)}/attributes?sel=only`)
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
-      this.goodAttr = res.data
+      console.log('res.data: ', res.data)
+      this.onlyTableData = res.data
     },
     uploadFile(res) {
       this.goodForm.pics.push(res.file)
     },
-    submitGood() {
-      console.log(this.goodAttrForm)
-      console.log(this.goodForm)
+    async submitGood() {
+      this.manyTableData.forEach(item => {
+        console.log('item: ', item)
+        const manyInfo = {
+          attr_id: item.attr_id,
+          attr_value: item.label.join(' ')
+        }
+        this.goodForm.attrs.push(manyInfo)
+      })
+      console.log('this.onlyTableData: ', this.onlyTableData)
+      this.onlyTableData.forEach(item => {
+        const onlyInfo = {
+          attr_id: item.attr_id,
+          attr_value: item.attr_vals
+        }
+        this.goodForm.attrs.push(onlyInfo)
+      })
+      console.log('this.goodForm.goods: ', this.goodForm.goods)
+      this.goodForm.goods_cat = this.goodForm.goods_cat.join(',')
+      console.log('this.goodForm: ', this.goodForm)
+      const { data: res } = await this.$http.post('/goods', this.goodForm)
+      if (res.meta.status !== 201) return this.$message.error(res.meta.msg)
+      this.$message.success('商品创建成功')
+      this.$router.push('/goods')
+    },
+    goodParamsSubmit() {
+      console.log('goodManyParams: ', this.goodManyParams)
     }
   }
 }

@@ -36,7 +36,9 @@ import {
   Step,
   Tabs,
   TabPane,
-  Upload
+  Upload,
+  CheckboxGroup,
+  Checkbox
 } from 'element-ui'
 
 Vue.use(Button)
@@ -74,5 +76,7 @@ Vue.use(Step)
 Vue.use(Tabs)
 Vue.use(TabPane)
 Vue.use(Upload)
+Vue.use(CheckboxGroup)
+Vue.use(Checkbox)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm
