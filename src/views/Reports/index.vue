@@ -8,8 +8,8 @@
       </el-breadcrumb>
     </div>
     <div class="main">
-      <!--<v-chart :option="option"></v-chart>-->
-      <v-chart :option="chartOption"></v-chart>
+      <v-chart :option="option" class="echarts"></v-chart>
+      <!--<v-chart :option="chartOption" style="height:500px;"></v-chart>-->
     </div>
   </div>
 </template>
@@ -66,9 +66,8 @@ export default {
       if (res.meta.status !== 200) return this.$message.error(res.meta.msg)
       this.option = res.data
       this.option.title = {
-        text: '慕课外卖小手数据大盘',
-        subtext: '销售趋势统计',
-        left: 'center'
+        text: '用户来源',
+        left: 'left'
       }
       console.log('this.option: ', this.option)
     }
@@ -87,6 +86,10 @@ export default {
     .main{
       background-color: #fff;
       padding: 20px;
+      .echarts{
+        width: 1000px;
+        height: 500px;
+      }
     }
   }
 </style>
